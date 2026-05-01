@@ -17,13 +17,15 @@ const JourneyScene = dynamic(() => import('@/components/three/JourneyScene'), {
 });
 
 /**
- * Decide whether to render the WebGL hero scene. Default ON — only fall
- * back to the static SVG when the user has explicitly opted out via
- * reduced-motion or save-data. Hardware/connection sniffing is
- * unreliable across browsers and was wrongly flagging healthy machines.
+ * Decide whether to render the WebGL hero scene. WebGL is opt-out on
+ * desktop (turned off only when the user has explicitly asked for less
+ * motion or less data) and OFF on mobile, where the static SVG hero
+ * reads better and renders faster on the smaller, narrower viewport.
+ * Hardware/connection sniffing is unreliable across browsers and was
+ * wrongly flagging healthy machines, so we don't sniff.
  */
 function useShouldRender3D() {
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -33,7 +35,10 @@ function useShouldRender3D() {
     };
     const conn = (navigator as NavWithConn).connection;
     const saveData = conn?.saveData === true;
-    setEnabled(!reduceMotion && !saveData);
+    // Tailwind's `md` breakpoint — same threshold the rest of the layout
+    // uses to switch from the mobile column to the desktop hero.
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    setEnabled(isDesktop && !reduceMotion && !saveData);
   }, []);
 
   return enabled;
