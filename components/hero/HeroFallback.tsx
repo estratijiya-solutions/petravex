@@ -116,14 +116,18 @@ export function HeroFallback() {
         </g>
       </svg>
 
-      {/* Centered single stone — no rotation, no morphing. Just sits there. */}
-      <div className="pointer-events-none absolute inset-x-0 flex flex-col items-center" style={{ top: '8%' }}>
+      {/* Stone position adapts to viewport:
+          - Mobile: sits above the wordmark (top of hero), small + dim so
+            it reads as a decorative crown, not a competing focal point.
+          - Desktop: centered in the hero, large, full opacity — the
+            visual centerpiece behind/around the wordmark. */}
+      <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-6 md:top-1/2 md:-translate-y-1/2">
         <div className="relative" style={{ perspective: '1600px', perspectiveOrigin: '50% 35%' }}>
           {/* Hover aura */}
           <div
             ref={auraRef}
             aria-hidden
-            className="pointer-events-none absolute left-1/2 top-1/2 h-[260px] w-[260px] md:h-[420px] md:w-[420px] -translate-x-1/2 -translate-y-1/2"
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[180px] w-[180px] md:h-[420px] md:w-[420px] -translate-x-1/2 -translate-y-1/2"
             style={{
               opacity: 0.25,
               background:
@@ -134,7 +138,7 @@ export function HeroFallback() {
           />
           <div
             ref={containerRef}
-            className="relative h-[180px] w-[180px] md:h-[340px] md:w-[340px]"
+            className="relative h-[120px] w-[120px] md:h-[340px] md:w-[340px] opacity-50 md:opacity-100"
             style={{
               transformStyle: 'preserve-3d',
               willChange: 'transform',

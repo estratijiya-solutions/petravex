@@ -27,8 +27,11 @@ export default function JourneyScene({ scrollRef, mouseRef }: Props) {
     return () => window.clearTimeout(t);
   }, []);
 
+  // On mobile the hero grows tall (cards stack vertically), so the canvas
+  // is capped to viewport height — otherwise the stone, rendered at the
+  // canvas center, ends up below the fold. On md+ it fills the full hero.
   return (
-    <div className="absolute inset-0 -z-10">
+    <div className="absolute top-0 inset-x-0 h-[100svh] md:inset-0 md:h-auto -z-10">
       {/* Center darkening — pulls focus to the wordmark and pushes the
           stone visually backwards so it never competes with the type. */}
       <div

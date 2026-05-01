@@ -56,11 +56,17 @@ export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
     return g;
   }, []);
 
-  useFrame(({ camera, clock }, delta) => {
+  useFrame(({ camera, clock, size }, delta) => {
     const t = clock.elapsedTime;
     const scroll = scrollRef.current ?? 0;
     const mouse = mouseRef.current ?? { x: 0, y: 0 };
     const ease = 1 - Math.pow(0.001, delta);
+
+    // On a tall narrow canvas (portrait phone), shift the stone UP so it
+    // sits above the hero text instead of overlapping it. Aspect < 1
+    // means portrait; the further from 1, the higher we lift the stone.
+    const aspect = size.width / Math.max(1, size.height);
+    const targetGroupY = aspect < 0.9 ? THREE.MathUtils.lerp(0, 2.4, Math.min(1, (0.9 - aspect) / 0.4)) : 0;
 
     if (groupRef.current) {
       // Very slow Y rotation — one revolution every ~3 minutes. Subtle
@@ -77,13 +83,21 @@ export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
         mouse.x * 0.05,
         ease,
       );
+      // Smoothly interpolate the stone's Y position toward its target
+      groupRef.current.position.y = THREE.MathUtils.lerp(
+        groupRef.current.position.y,
+        targetGroupY,
+        0.08,
+      );
     }
 
-    // Camera — slight dolly with scroll, soft mouse parallax
+    // Camera — slight dolly with scroll, soft mouse parallax. On portrait
+    // viewports we also lift the camera so it stays aimed at the (lifted)
+    // stone instead of empty space above it.
     camera.position.z = THREE.MathUtils.lerp(camera.position.z, 9 + scroll * 3, 0.04);
     camera.position.x = THREE.MathUtils.lerp(camera.position.x, mouse.x * 0.4, 0.04);
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, mouse.y * 0.2, 0.04);
-    camera.lookAt(0, 0, 0);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetGroupY + mouse.y * 0.2, 0.04);
+    camera.lookAt(0, targetGroupY, 0);
 
     // Gentle gold pulse — very slow, very subtle
     if (stoneRef.current) {
