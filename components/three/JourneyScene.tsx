@@ -29,10 +29,19 @@ export default function JourneyScene({ scrollRef, mouseRef }: Props) {
 
   return (
     <div className="absolute inset-0 -z-10">
-      {/* Light vignette — soft falloff at edges, center stays clear */}
-      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-radial from-transparent via-black/8 to-black/65" />
-      {/* Soft bottom fade so cards have a clean reading background */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-48 bg-gradient-to-t from-black to-transparent" />
+      {/* Center darkening — pulls focus to the wordmark and pushes the
+          stone visually backwards so it never competes with the type. */}
+      <div
+        className="pointer-events-none absolute inset-0 z-10"
+        style={{
+          background:
+            'radial-gradient(ellipse at 50% 45%, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.30) 28%, rgba(10,10,10,0) 60%)',
+        }}
+      />
+      {/* Edge vignette — soft falloff at the corners */}
+      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-radial from-transparent via-black/10 to-black/65" />
+      {/* Bottom fade — clean reading background for the entry cards */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-56 bg-gradient-to-t from-black via-black/70 to-transparent" />
 
       <div
         className="absolute inset-0 transition-opacity duration-1000 ease-signature"
