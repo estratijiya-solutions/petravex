@@ -1,0 +1,39 @@
+services:
+  petravex:
+    container_name: petravex
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: petravex:latest
+    restart: unless-stopped
+    expose:
+      - "3000"
+    networks:
+      - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "--tries=1", "--timeout=3", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      # HTTPS router
+      - "traefik.http.routers.petravex.rule=Host(`visualizuae.com`) || Host(`www.visualizuae.com`)"
+      - "traefik.http.routers.petravex.entrypoints=websecure"
+      - "traefik.http.routers.petravex.tls=true"
+      - "traefik.http.routers.petravex.tls.certresolver=letsencrypt"
+      - "traefik.http.services.petravex.loadbalancer.server.port=3000"
+
+      # HTTP -> HTTPS redirect
+      - "traefik.http.routers.petravex-http.rule=Host(`visualizuae.com`) || Host(`www.visualizuae.com`)"
+      - "traefik.http.routers.petravex-http.entrypoints=web"
+      - "traefik.http.routers.petravex-http.middlewares=redirect-to-https@docker"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
+
+networks:
+  traefik:
+    external: true

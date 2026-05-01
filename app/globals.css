@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-black: #0a0a0a;
+  --color-black-soft: #141414;
+  --color-black-elevated: #1a1a1a;
+  --color-white: #ffffff;
+  --color-gold: #d4af37;
+  --color-gold-soft: rgba(212, 175, 55, 0.15);
+  --color-gold-glow: rgba(212, 175, 55, 0.4);
+  --color-gray: #8c8c8c;
+  --color-gray-soft: #2a2a2a;
+  --color-gray-light: #b5b5b5;
+  --signature-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body {
+  background: var(--color-black);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-almarai), 'Almarai', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.8;
+}
+
+/* Numerals in technical contexts use Latin font */
+.font-tech {
+  font-family: var(--font-montserrat), 'Montserrat', system-ui, sans-serif;
+  font-feature-settings: 'tnum' on, 'lnum' on;
+}
+
+/* Display headings (Latin) */
+.font-display {
+  font-family: var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+}
+
+::selection {
+  background: var(--color-gold);
+  color: var(--color-black);
+}
+
+/* Subtle scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-gray-soft);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold);
+}
+
+/* Origin utilities for gold-line draw animation */
+.origin-start {
+  transform-origin: right center; /* RTL: lines draw from right to left */
+}
+.origin-end {
+  transform-origin: left center;
+}
+[dir='ltr'] .origin-start {
+  transform-origin: left center;
+}
+[dir='ltr'] .origin-end {
+  transform-origin: right center;
+}
+
+/* Anchor offset under the sticky header */
+section[id] {
+  scroll-margin-top: 96px;
+}
+
+/* Gold glow on hover for CTAs */
+.glow-gold {
+  box-shadow: 0 0 0 0 var(--color-gold-glow);
+  transition: box-shadow 300ms var(--signature-ease), transform 300ms var(--signature-ease);
+}
+.glow-gold:hover {
+  box-shadow: 0 8px 32px -8px var(--color-gold-glow);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Pattern overlay helper */
+.pattern-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  z-index: 0;
+}
+
+/* Prevent layout shift on Arabic text */
+.arabic-balance {
+  text-wrap: balance;
+}

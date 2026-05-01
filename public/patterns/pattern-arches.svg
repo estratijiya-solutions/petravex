@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="160" viewBox="0 0 120 160" fill="none" stroke="#D4AF37" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <pattern id="arch-tile" width="120" height="160" patternUnits="userSpaceOnUse">
+      <path d="M 30 160 V 40 Q 30 14 60 14 Q 90 14 90 40 V 160" />
+      <path d="M 42 160 V 52 Q 42 26 60 26 Q 78 26 78 52 V 160" />
+      <path d="M 54 160 V 64 Q 54 38 60 38 Q 66 38 66 64 V 160" />
+      <path d="M 64 160 V 74 Q 64 56 60 56 Q 56 56 56 74 V 160" />
+    </pattern>
+  </defs>
+  <rect width="120" height="160" fill="url(#arch-tile)" />
+</svg>

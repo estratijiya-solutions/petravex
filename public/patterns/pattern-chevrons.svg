@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160" fill="none" stroke="#D4AF37" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round">
+  <defs>
+    <pattern id="chev-tile" width="60" height="60" patternUnits="userSpaceOnUse" patternTransform="rotate(-30)">
+      <path d="M 15 60 V 30 Q 15 18 30 18 Q 45 18 45 30 V 60" />
+      <path d="M 22 60 V 36 Q 22 26 30 26 Q 38 26 38 36 V 60" />
+      <path d="M 28 60 V 42 Q 28 34 30 34 Q 32 34 32 42 V 60" />
+    </pattern>
+  </defs>
+  <rect width="160" height="160" fill="url(#chev-tile)" />
+</svg>

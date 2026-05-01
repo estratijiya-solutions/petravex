@@ -1,0 +1,8 @@
+# Keep shell scripts and docker files as LF (run on Linux servers)
+*.sh           text eol=lf
+Dockerfile     text eol=lf
+*.yml          text eol=lf
+*.yaml         text eol=lf
+
+# Default: let git handle line endings, normalize on commit
+* text=auto
