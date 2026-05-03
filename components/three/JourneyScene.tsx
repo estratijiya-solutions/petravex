@@ -9,6 +9,7 @@ import { StoneAndBuilding } from './StoneAndBuilding';
 type Props = {
   scrollRef: RefObject<number>;
   mouseRef: RefObject<{ x: number; y: number }>;
+  reduce?: boolean;
 };
 
 /**
@@ -19,7 +20,7 @@ type Props = {
  * smooth fade-in on first paint, light vignette so the wordmark stays
  * legible without dimming the 3D.
  */
-export default function JourneyScene({ scrollRef, mouseRef }: Props) {
+export default function JourneyScene({ scrollRef, mouseRef, reduce = false }: Props) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     // Tiny delay before fade-in to let the canvas settle and avoid pop-in
@@ -68,7 +69,7 @@ export default function JourneyScene({ scrollRef, mouseRef }: Props) {
             {/* Two-layer star field for parallax depth */}
             <Stars radius={45} depth={20} count={280} factor={1.4} fade speed={0.5} />
             <Stars radius={90} depth={50} count={200} factor={3} fade speed={0.25} />
-            <StoneAndBuilding scrollRef={scrollRef} mouseRef={mouseRef} />
+            <StoneAndBuilding scrollRef={scrollRef} mouseRef={mouseRef} reduce={reduce} />
           </Suspense>
         </Canvas>
       </div>

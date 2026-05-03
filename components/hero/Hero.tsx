@@ -17,35 +17,37 @@ const JourneyScene = dynamic(() => import('@/components/three/JourneyScene'), {
 });
 
 /**
- * Decide whether to render the WebGL hero scene. WebGL is opt-out on
- * desktop (turned off only when the user has explicitly asked for less
- * motion or less data) and OFF on mobile, where the static SVG hero
- * reads better and renders faster on the smaller, narrower viewport.
- * Hardware/connection sniffing is unreliable across browsers and was
- * wrongly flagging healthy machines, so we don't sniff.
+ * Decide whether to render the WebGL hero scene and at what motion level.
+ * The form cycle (stone → bag → building) is the brand metaphor and must
+ * always show on desktop — we do NOT gate on prefers-reduced-motion. We
+ * only fall back to the static SVG when the user has Save-Data on or the
+ * viewport is mobile (where the static crown reads better in the narrow
+ * column). When prefers-reduced-motion is on we keep the cycle running
+ * but scale back ambient motion (parallax, dust, pulse) inside the scene.
  */
 function useShouldRender3D() {
-  const [enabled, setEnabled] = useState(false);
+  const [state, setState] = useState<{ enabled: boolean; reduce: boolean }>({
+    enabled: false,
+    reduce: false,
+  });
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     type NavWithConn = Navigator & {
       connection?: { saveData?: boolean };
     };
     const conn = (navigator as NavWithConn).connection;
     const saveData = conn?.saveData === true;
-    // Tailwind's `md` breakpoint — same threshold the rest of the layout
-    // uses to switch from the mobile column to the desktop hero.
     const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-    setEnabled(isDesktop && !reduceMotion && !saveData);
+    setState({ enabled: isDesktop && !saveData, reduce });
   }, []);
 
-  return enabled;
+  return state;
 }
 
 export function Hero() {
-  const render3D = useShouldRender3D();
+  const { enabled: render3D, reduce } = useShouldRender3D();
   const sectionRef = useRef<HTMLElement>(null);
   const scrollRef = useRef(0);
   const mouseRef = useRef({ x: 0, y: 0 });
@@ -96,7 +98,7 @@ export function Hero() {
       className="relative isolate flex min-h-[100svh] flex-col items-center justify-center overflow-hidden pt-24 pb-32 md:pt-32 md:pb-24"
     >
       {render3D ? (
-        <JourneyScene scrollRef={scrollRef} mouseRef={mouseRef} />
+        <JourneyScene scrollRef={scrollRef} mouseRef={mouseRef} reduce={reduce} />
       ) : (
         <HeroFallback />
       )}

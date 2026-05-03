@@ -6,10 +6,14 @@ import * as THREE from 'three';
 
 const GOLD = new THREE.Color('#D4AF37');
 const CYCLE = 30; // seconds — full stone → bag → building → stone cycle
+// Lift the form above the wordmark so it sits as a crown over the type,
+// not behind it. Tuned visually against the desktop hero layout.
+const BASE_Y_LIFT = 1.7;
 
 type Props = {
   scrollRef: RefObject<number>;
   mouseRef: RefObject<{ x: number; y: number }>;
+  reduce?: boolean;
 };
 
 /**
@@ -30,7 +34,7 @@ type Props = {
  * only runs on desktop. Portrait-aspect handling is kept as a safety net
  * for narrow desktop windows.
  */
-export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
+export function StoneAndBuilding({ scrollRef, mouseRef, reduce = false }: Props) {
   const groupRef = useRef<THREE.Group>(null);
 
   const stoneGroupRef = useRef<THREE.Group>(null);
@@ -136,26 +140,27 @@ export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
     const mouse = mouseRef.current ?? { x: 0, y: 0 };
     const ease = 1 - Math.pow(0.001, delta);
 
-    // Portrait safety net for narrow desktop windows — lift the group up
-    // so a tall canvas doesn't put the object under the wordmark.
+    // Portrait safety net adds a little extra lift on narrow desktop windows.
     const aspect = size.width / Math.max(1, size.height);
-    const targetGroupY = aspect < 0.9
-      ? THREE.MathUtils.lerp(0, 2.4, Math.min(1, (0.9 - aspect) / 0.4))
+    const portraitLift = aspect < 0.9
+      ? THREE.MathUtils.lerp(0, 0.8, Math.min(1, (0.9 - aspect) / 0.4))
       : 0;
+    const targetGroupY = BASE_Y_LIFT + portraitLift;
+    const parallaxScale = reduce ? 0 : 1;
 
     if (groupRef.current) {
       // One full rotation per cycle — synchronizes the form change with
       // the spin so the morph reads as a deliberate transformation.
       groupRef.current.rotation.y = (t / CYCLE) * Math.PI * 2;
-      // Mouse parallax only — no time-based wobble.
+      // Mouse parallax — disabled when the user prefers reduced motion.
       groupRef.current.rotation.x = THREE.MathUtils.lerp(
         groupRef.current.rotation.x,
-        mouse.y * 0.10,
+        mouse.y * 0.10 * parallaxScale,
         ease,
       );
       groupRef.current.rotation.z = THREE.MathUtils.lerp(
         groupRef.current.rotation.z,
-        mouse.x * 0.05,
+        mouse.x * 0.05 * parallaxScale,
         ease,
       );
       groupRef.current.position.y = THREE.MathUtils.lerp(
@@ -165,15 +170,17 @@ export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
       );
     }
 
-    // Camera — slight dolly with scroll, soft mouse parallax
+    // Camera stays roughly centered (parallax + scroll dolly only) so
+    // lifting the group actually moves it up in the viewport rather than
+    // having the camera follow it back to centre.
     camera.position.z = THREE.MathUtils.lerp(camera.position.z, 9 + scroll * 3, 0.04);
-    camera.position.x = THREE.MathUtils.lerp(camera.position.x, mouse.x * 0.4, 0.04);
+    camera.position.x = THREE.MathUtils.lerp(camera.position.x, mouse.x * 0.4 * parallaxScale, 0.04);
     camera.position.y = THREE.MathUtils.lerp(
       camera.position.y,
-      targetGroupY + mouse.y * 0.2,
+      mouse.y * 0.2 * parallaxScale,
       0.04,
     );
-    camera.lookAt(0, targetGroupY, 0);
+    camera.lookAt(0, 0, 0);
 
     // 3-phase cosine cross-fade — stone (0), bag (1/3), building (2/3)
     const phase = (t / CYCLE) % 1;
@@ -181,21 +188,23 @@ export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
     applyPhaseOpacity(bagGroupRef.current, windowAt(phase, 1 / 3));
     applyPhaseOpacity(buildingGroupRef.current, windowAt(phase, 2 / 3));
 
-    // Very gentle gold pulse on the primary stone edges
+    // Very gentle gold pulse on the primary stone edges. Held flat at
+    // the brand gold when reduce-motion is on so the edge color never
+    // breathes.
     if (stoneRef.current) {
-      const pulse = 0.94 + Math.sin(t * 0.4) * 0.06;
+      const pulse = reduce ? 1 : 0.94 + Math.sin(t * 0.4) * 0.06;
       const mat = stoneRef.current.material as THREE.LineBasicMaterial;
       mat.color.setRGB(0.831 * pulse, 0.686 * pulse, 0.216 * pulse);
     }
 
-    // Ground glow breathes lightly
+    // Ground glow breathes lightly (held flat for reduce-motion).
     if (groundRef.current) {
       const mat = groundRef.current.material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.05 + Math.sin(t * 0.3) * 0.015;
+      mat.opacity = reduce ? 0.05 : 0.05 + Math.sin(t * 0.3) * 0.015;
     }
 
-    // Dust drifts very slowly
-    if (dustRef.current) {
+    // Dust drifts very slowly. Skip when reduce-motion is on.
+    if (dustRef.current && !reduce) {
       dustRef.current.rotation.y += delta * 0.015;
     }
   });
