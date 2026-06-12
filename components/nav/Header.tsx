@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Menu } from 'lucide-react';
-import { content } from '@/lib/content.ar';
+import { useContent } from '@/lib/content';
 import { cn } from '@/lib/utils';
 import { LogoMark } from '@/components/ui/LogoMark';
+import { LocaleSwitcher } from './LocaleSwitcher';
 import { MobileMenu } from './MobileMenu';
 
 const navItems = [
@@ -20,6 +21,7 @@ const navItems = [
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const content = useContent();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -45,8 +47,8 @@ export function Header() {
               priority
               className="transition-transform duration-500 ease-signature group-hover:scale-105"
             />
-            <span className="font-arabic text-base md:text-lg font-bold text-white tracking-wide">
-              بترافكس
+            <span className="font-display rtl:font-arabic text-base md:text-lg font-bold text-white tracking-[0.18em] rtl:tracking-wide">
+              {content.hero.wordmark}
             </span>
           </Link>
 
@@ -55,7 +57,7 @@ export function Header() {
               <Link
                 key={item.key}
                 href={item.href}
-                className="font-arabic text-sm text-white/80 hover:text-gold transition-colors duration-300 ease-signature relative group"
+                className="text-sm text-white/80 hover:text-gold transition-colors duration-300 ease-signature relative group"
               >
                 <span>{content.nav[item.key]}</span>
                 <span className="absolute -bottom-1 right-0 left-0 h-px bg-gold scale-x-0 group-hover:scale-x-100 origin-start transition-transform duration-300 ease-signature" />
@@ -64,9 +66,10 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <LocaleSwitcher />
             <Link
               href="/contact"
-              className="hidden md:inline-flex items-center px-5 py-2 text-sm font-arabic font-medium border border-gold/60 text-white hover:border-gold hover:bg-gold/5 transition-all duration-300 ease-signature"
+              className="hidden md:inline-flex items-center px-5 py-2 text-sm font-medium border border-gold/60 text-white hover:border-gold hover:bg-gold/5 transition-all duration-300 ease-signature"
             >
               {content.nav.contact}
             </Link>
@@ -74,7 +77,7 @@ export function Header() {
               type="button"
               onClick={() => setMenuOpen(true)}
               className="lg:hidden p-2 text-white hover:text-gold transition-colors"
-              aria-label="فتح القائمة"
+              aria-label="Open menu"
             >
               <Menu className="h-6 w-6" strokeWidth={1.5} />
             </button>

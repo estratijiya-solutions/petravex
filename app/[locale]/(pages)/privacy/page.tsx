@@ -1,13 +1,8 @@
 import { PlaceholderPage } from '@/components/ui/PlaceholderPage';
-
-export const metadata = { title: 'الخصوصية' };
+import { useContent } from '@/lib/content';
 
 export default function PrivacyPage() {
-  return (
-    <PlaceholderPage
-      eyebrow="السياسة"
-      title="سياسة الخصوصية"
-      description="نلتزم بحماية بياناتك. سياسة الخصوصية الكاملة قيد التحضير."
-    />
-  );
+  const content = useContent();
+  const p = content.placeholders.privacy;
+  return <PlaceholderPage eyebrow={p.eyebrow} title={p.title} description={p.description} />;
 }

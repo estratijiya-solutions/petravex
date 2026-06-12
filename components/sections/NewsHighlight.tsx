@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
-import { content } from '@/lib/content.ar';
+import { useContent } from '@/lib/content';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 
 /**
@@ -26,6 +26,7 @@ const newsImages = [
 
 export function NewsHighlight() {
   const reduce = useReducedMotion();
+  const content = useContent();
   const [lead, ...rest] = content.news.items;
 
   return (
@@ -35,10 +36,10 @@ export function NewsHighlight() {
 
         <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
           <motion.article
-            initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: reduce ? 0 : 0.7, ease: [0.4, 0, 0.2, 1] }}
             className="lg:col-span-7"
           >
             <Link
@@ -53,16 +54,16 @@ export function NewsHighlight() {
                 sizes="(min-width: 1024px) 56vw, 100vw"
               />
               <div className="relative flex flex-1 flex-col gap-4 p-7 md:p-9">
-                <span className="font-arabic text-xs uppercase tracking-caption text-gold">
+                <span className="text-xs uppercase tracking-caption text-gold">
                   {lead.date}
                 </span>
-                <h3 className="font-arabic text-2xl md:text-3xl font-bold text-white leading-tight">
+                <h3 className="text-2xl md:text-3xl font-bold text-white leading-tight">
                   {lead.title}
                 </h3>
-                <p className="font-arabic text-base text-gray-light leading-relaxed">
+                <p className="text-base text-gray-light leading-relaxed">
                   {lead.excerpt}
                 </p>
-                <div className="mt-auto inline-flex items-center gap-2 font-arabic text-sm font-medium text-gold pt-2">
+                <div className="mt-auto inline-flex items-center gap-2 text-sm font-medium text-gold pt-2">
                   <span>{content.news.cta}</span>
                   <ArrowLeft
                     className="h-4 w-4 transition-transform duration-300 ease-signature group-hover:-translate-x-1"
@@ -78,10 +79,10 @@ export function NewsHighlight() {
             {rest.map((item, i) => (
               <motion.article
                 key={item.href}
-                initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1], delay: 0.1 + i * 0.1 }}
+                transition={{ duration: reduce ? 0 : 0.6, ease: [0.4, 0, 0.2, 1], delay: reduce ? 0 : 0.1 + i * 0.1 }}
                 className="flex-1"
               >
                 <Link
@@ -98,16 +99,16 @@ export function NewsHighlight() {
                     />
                   </div>
                   <div className="flex flex-1 flex-col gap-2 min-w-0">
-                    <span className="font-arabic text-xs uppercase tracking-caption text-gold">
+                    <span className="text-xs uppercase tracking-caption text-gold">
                       {item.date}
                     </span>
-                    <h3 className="font-arabic text-base md:text-lg font-bold text-white leading-snug line-clamp-2">
+                    <h3 className="text-base md:text-lg font-bold text-white leading-snug line-clamp-2">
                       {item.title}
                     </h3>
-                    <p className="font-arabic text-xs md:text-sm text-gray-light leading-relaxed line-clamp-2">
+                    <p className="text-xs md:text-sm text-gray-light leading-relaxed line-clamp-2">
                       {item.excerpt}
                     </p>
-                    <div className="mt-auto inline-flex items-center gap-2 font-arabic text-xs font-medium text-gold pt-1">
+                    <div className="mt-auto inline-flex items-center gap-2 text-xs font-medium text-gold pt-1">
                       <span>{content.news.cta}</span>
                       <ArrowLeft
                         className="h-3 w-3 transition-transform duration-300 ease-signature group-hover:-translate-x-1"

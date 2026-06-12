@@ -4,39 +4,39 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
-import { content } from '@/lib/content.ar';
+import { useContent } from '@/lib/content';
 import { GoldDivider } from '@/components/ui/GoldDivider';
 
 const UNSPLASH = (id: string) =>
   `https://images.unsplash.com/photo-${id}?w=1200&q=80&auto=format&fit=crop`;
 
-const cards = [
-  {
-    ...content.dualCta.supplier,
-    key: 'supplier' as const,
-    // Warehouse / stacked materials — supplier context
-    image: UNSPLASH('1553413077-190dd305871c'),
-  },
-  {
-    ...content.dualCta.buyer,
-    key: 'buyer' as const,
-    // Dubai skyline at sunset — Burj Khalifa unmistakable, verified UAE
-    image: UNSPLASH('1512453979798-5ea266f8880c'),
-  },
-];
-
 export function DualCTA() {
   const reduce = useReducedMotion();
+  const content = useContent();
+  const cards = [
+    {
+      ...content.dualCta.supplier,
+      key: 'supplier' as const,
+      // Warehouse / stacked materials — supplier context
+      image: UNSPLASH('1553413077-190dd305871c'),
+    },
+    {
+      ...content.dualCta.buyer,
+      key: 'buyer' as const,
+      // Dubai skyline at sunset — Burj Khalifa unmistakable, verified UAE
+      image: UNSPLASH('1512453979798-5ea266f8880c'),
+    },
+  ];
   return (
     <section id="cta" className="relative bg-black py-24 md:py-32 overflow-hidden">
       <div className="relative mx-auto max-w-7xl px-6 md:px-10 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
         {cards.map((card, i) => (
           <motion.div
             key={card.key}
-            initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1], delay: i * 0.1 }}
+            transition={{ duration: reduce ? 0 : 0.7, ease: [0.4, 0, 0.2, 1], delay: reduce ? 0 : i * 0.1 }}
           >
             <Link
               href={card.href}
@@ -68,13 +68,13 @@ export function DualCTA() {
 
               <div className="relative flex h-full flex-col justify-end p-8 md:p-10 gap-5">
                 <GoldDivider width="short" />
-                <h3 className="font-arabic text-h2-mobile md:text-h2-desktop font-bold text-white arabic-balance leading-tight">
+                <h3 className="text-h2-mobile md:text-h2-desktop font-bold text-white arabic-balance leading-tight">
                   {card.title}
                 </h3>
-                <p className="font-arabic text-base md:text-lg text-gray-light max-w-md arabic-balance">
+                <p className="text-base md:text-lg text-gray-light max-w-md arabic-balance">
                   {card.desc}
                 </p>
-                <div className="mt-2 inline-flex items-center gap-2 font-arabic text-sm font-medium text-gold">
+                <div className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-gold">
                   <span>{card.cta}</span>
                   <ArrowLeft
                     className="h-4 w-4 transition-transform duration-300 ease-signature group-hover:-translate-x-1"

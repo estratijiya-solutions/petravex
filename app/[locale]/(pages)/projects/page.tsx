@@ -1,13 +1,8 @@
 import { PlaceholderPage } from '@/components/ui/PlaceholderPage';
-
-export const metadata = { title: 'المشاريع' };
+import { useContent } from '@/lib/content';
 
 export default function ProjectsPage() {
-  return (
-    <PlaceholderPage
-      eyebrow="المشاريع"
-      title="من المواد الخام إلى المشروع المُسلَّم"
-      description="لمحة عن مشاريعنا الإنشائية والتجارية في الإمارات. معرض المشاريع قيد التحضير."
-    />
-  );
+  const content = useContent();
+  const p = content.placeholders.projects;
+  return <PlaceholderPage eyebrow={p.eyebrow} title={p.title} description={p.description} />;
 }

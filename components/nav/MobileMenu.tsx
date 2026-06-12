@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useEffect } from 'react';
-import { content } from '@/lib/content.ar';
+import { useContent } from '@/lib/content';
 import { LogoMark } from '@/components/ui/LogoMark';
 
 const navItems = [
@@ -23,6 +23,7 @@ type Props = {
 };
 
 export function MobileMenu({ open, onClose }: Props) {
+  const content = useContent();
   useEffect(() => {
     if (open) document.body.style.overflow = 'hidden';
     else document.body.style.overflow = '';
@@ -59,13 +60,15 @@ export function MobileMenu({ open, onClose }: Props) {
             <div className="flex items-center justify-between mb-12">
               <Link href="/" onClick={onClose} className="flex items-center gap-3">
                 <LogoMark size={32} />
-                <span className="font-arabic text-base font-bold text-white">بترافكس</span>
+                <span className="font-display rtl:font-arabic text-base font-bold text-white tracking-[0.18em] rtl:tracking-wide">
+                  {content.hero.wordmark}
+                </span>
               </Link>
               <button
                 type="button"
                 onClick={onClose}
                 className="p-2 text-white hover:text-gold transition-colors"
-                aria-label="إغلاق القائمة"
+                aria-label="Close menu"
               >
                 <X className="h-6 w-6" strokeWidth={1.5} />
               </button>
@@ -82,7 +85,7 @@ export function MobileMenu({ open, onClose }: Props) {
                   <Link
                     href={item.href}
                     onClick={onClose}
-                    className="block py-4 font-arabic text-2xl text-white/85 hover:text-gold transition-colors duration-300 border-b border-gray-soft"
+                    className="block py-4 text-2xl text-white/85 hover:text-gold transition-colors duration-300 border-b border-gray-soft"
                   >
                     {content.nav[item.key]}
                   </Link>
@@ -90,7 +93,7 @@ export function MobileMenu({ open, onClose }: Props) {
               ))}
             </ul>
 
-            <div className="mt-auto pt-8 text-sm text-gray-light font-arabic">
+            <div className="mt-auto pt-8 text-sm text-gray-light">
               <p className="font-tech">{content.footer.contact.email}</p>
               <p className="font-tech mt-1">{content.footer.contact.phone}</p>
             </div>

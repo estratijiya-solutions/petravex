@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
-import { content } from '@/lib/content.ar';
+import { useContent } from '@/lib/content';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Button } from '@/components/ui/Button';
 import { divisionIcons } from '@/components/ui/DivisionIcons';
 
 export function DivisionsGrid() {
   const reduce = useReducedMotion();
+  const content = useContent();
 
   return (
     <section id="divisions" className="relative bg-black py-24 md:py-32 overflow-hidden">
@@ -31,10 +32,10 @@ export function DivisionsGrid() {
             return (
               <motion.div
                 key={d.key}
-                initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
-                transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1], delay: i * 0.06 }}
+                transition={{ duration: reduce ? 0 : 0.6, ease: [0.4, 0, 0.2, 1], delay: reduce ? 0 : i * 0.06 }}
               >
                 <Link
                   href={d.href}
@@ -49,17 +50,17 @@ export function DivisionsGrid() {
                   <Icon className="relative text-gold transition-transform duration-500 ease-signature group-hover:-rotate-3 group-hover:scale-105" />
 
                   <div className="relative flex flex-col gap-1">
-                    <h3 className="font-arabic text-base md:text-lg font-bold text-white">
+                    <h3 className="text-base md:text-lg font-bold text-white">
                       {d.name}
                     </h3>
-                    <p className="font-arabic text-xs text-gray-light tracking-wide">
+                    <p className="text-xs text-gray-light tracking-wide">
                       {d.location}
                     </p>
                   </div>
 
-                  <div className="relative mt-auto flex items-center gap-2 text-xs text-gold font-arabic">
+                  <div className="relative mt-auto flex items-center gap-2 text-xs text-gold ">
                     <span className="opacity-70 transition-opacity duration-300 group-hover:opacity-100">
-                      التفاصيل
+                      {content.divisions.detailsCta}
                     </span>
                     <ArrowLeft
                       className="h-3 w-3 transition-transform duration-300 ease-signature group-hover:-translate-x-1"

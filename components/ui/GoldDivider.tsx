@@ -19,10 +19,10 @@ export function GoldDivider({ className, delay = 0, width = 'medium' }: Props) {
   const reduce = useReducedMotion();
   return (
     <motion.div
-      initial={reduce ? { opacity: 1, scaleX: 1 } : { scaleX: 0 }}
+      initial={{ scaleX: 0 }}
       whileInView={{ scaleX: 1 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1], delay }}
+      transition={{ duration: reduce ? 0 : 1.2, ease: [0.4, 0, 0.2, 1], delay: reduce ? 0 : delay }}
       className={cn(
         'h-px bg-gold origin-start',
         widths[width],

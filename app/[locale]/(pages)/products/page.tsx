@@ -1,13 +1,8 @@
 import { PlaceholderPage } from '@/components/ui/PlaceholderPage';
-
-export const metadata = { title: 'المنتجات' };
+import { useContent } from '@/lib/content';
 
 export default function ProductsPage() {
-  return (
-    <PlaceholderPage
-      eyebrow="المنتجات"
-      title="كتالوج بترافكس"
-      description="إسمنت CEM I 52.5 و CEM II/A-L، طوب خرساني، حجر جيري، ومواد ديكور وفق المواصفات الخليجية. الكتالوج التفاعلي قيد التحضير."
-    />
-  );
+  const content = useContent();
+  const p = content.placeholders.products;
+  return <PlaceholderPage eyebrow={p.eyebrow} title={p.title} description={p.description} />;
 }

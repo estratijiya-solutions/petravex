@@ -2,13 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { content } from '@/lib/content.ar';
+import { useContent } from '@/lib/content';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { PatternBg } from '@/components/ui/PatternBg';
 import { stepIcons } from '@/components/ui/StepIcons';
 
 export function StoryTimeline() {
   const reduce = useReducedMotion();
+  const content = useContent();
   const lineRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -18,7 +19,12 @@ export function StoryTimeline() {
 
   // Drawn rail + active-step tracking
   useEffect(() => {
-    if (reduce) return;
+    if (reduce) {
+      // Reduced-motion: snap the rail to full length immediately so the
+      // gradient line is visible without scroll-driven animation.
+      if (lineRef.current) lineRef.current.style.transform = 'scaleY(1)';
+      return;
+    }
     let raf = 0;
 
     const onScroll = () => {
@@ -87,13 +93,15 @@ export function StoryTimeline() {
             style={{ insetInlineStart: '36px' }}
             aria-hidden
           />
-          {/* Drawn (active) rail */}
+          {/* Drawn (active) rail — always starts at scaleY(0) on both server
+              and client (deterministic for hydration). When reduced motion is
+              preferred, an effect below snaps it to full immediately. */}
           <div
             ref={lineRef}
             className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-gold via-gold to-gold/40 origin-top"
             style={{
               insetInlineStart: '36px',
-              transform: reduce ? 'scaleY(1)' : 'scaleY(0)',
+              transform: 'scaleY(0)',
             }}
             aria-hidden
           />
@@ -110,13 +118,13 @@ export function StoryTimeline() {
                 <motion.li
                   key={step.num}
                   ref={(el) => { itemRefs.current[i] = el; }}
-                  initial={reduce ? { opacity: 1, x: 0 } : { opacity: 0, x: 32 }}
+                  initial={{ opacity: 0, x: 32 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: '-100px' }}
-                  transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+                  transition={{ duration: reduce ? 0 : 0.7, ease: [0.4, 0, 0.2, 1] }}
                   onMouseEnter={() => setHoveredIdx(i)}
                   onMouseLeave={() => setHoveredIdx((prev) => (prev === i ? null : prev))}
-                  className="group relative grid grid-cols-[72px_1fr] md:grid-cols-[72px_minmax(0,1fr)_120px] items-start gap-x-6 md:gap-x-10 cursor-default"
+                  className="group relative grid grid-cols-[72px_minmax(0,1fr)] md:grid-cols-[72px_minmax(0,1fr)_120px] items-start gap-x-6 md:gap-x-10 cursor-default"
                 >
                   {/* Step chip — large Cormorant numeral */}
                   <div className="relative flex justify-center">
@@ -160,16 +168,19 @@ export function StoryTimeline() {
 
                   {/* Text content — title shifts subtly toward gold on hover.
                       A richer "story" paragraph reveals on hover, separated
-                      by a thin gold rule that animates in. */}
-                  <div className="flex flex-col gap-2 pt-3">
+                      by a thin gold rule that animates in.
+                      `min-w-0` lets this grid column shrink below its content's
+                      intrinsic width on narrow phones (otherwise the row
+                      overflowed the viewport by ~8px on <768px screens). */}
+                  <div className="flex min-w-0 flex-col gap-2 pt-3">
                     <h3
-                      className="font-arabic text-2xl md:text-3xl font-bold leading-tight transition-colors duration-500 ease-signature"
+                      className="text-2xl md:text-3xl font-bold leading-tight transition-colors duration-500 ease-signature"
                       style={{ color: isHovered ? '#F5DC83' : '#FFFFFF' }}
                     >
                       {step.title}
                     </h3>
                     <p
-                      className="font-arabic text-base md:text-lg max-w-xl leading-relaxed transition-colors duration-500 ease-signature"
+                      className="text-base md:text-lg max-w-xl leading-relaxed transition-colors duration-500 ease-signature"
                       style={{ color: isHovered ? '#D4D4D4' : '#B5B5B5' }}
                     >
                       {step.desc}
@@ -194,7 +205,7 @@ export function StoryTimeline() {
                           marginBottom: '10px',
                         }}
                       />
-                      <p className="font-arabic text-sm md:text-[15px] text-gray-light/95 leading-loose max-w-xl">
+                      <p className="text-sm md:text-[15px] text-gray-light/95 leading-loose max-w-xl">
                         {step.story}
                       </p>
                     </div>

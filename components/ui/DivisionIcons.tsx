@@ -60,9 +60,50 @@ export function CementIcon({ className }: IconProps) {
   );
 }
 
+// Armchair side-view — interior/decor connotation
+export function DecorIcon({ className }: IconProps) {
+  return (
+    <svg {...baseProps} className={className}>
+      <path d="M8 22 L8 16 Q8 12 12 12 L28 12 Q32 12 32 16 L32 22" />
+      <path d="M6 22 Q6 20 8 20 L32 20 Q34 20 34 22 L34 30 Q34 32 32 32 L8 32 Q6 32 6 30 Z" />
+      <line x1="10" y1="32" x2="10" y2="35" />
+      <line x1="30" y1="32" x2="30" y2="35" />
+      <path d="M12 22 L12 28" />
+      <path d="M28 22 L28 28" />
+    </svg>
+  );
+}
+
+// Wrench — fit-out / installation work
+export function FitOutIcon({ className }: IconProps) {
+  return (
+    <svg {...baseProps} className={className}>
+      <path d="M27 6 A6 6 0 1 0 32 17 L34 19 L19 34 L17 32 L32 17" />
+      <path d="M27 6 L24 9 L27 12 L30 9 Z" />
+    </svg>
+  );
+}
+
+// Shipping container with bidirectional arrows — import/export
+export function ImportExportIcon({ className }: IconProps) {
+  return (
+    <svg {...baseProps} className={className}>
+      <rect x="10" y="14" width="20" height="14" />
+      <line x1="14" y1="14" x2="14" y2="28" />
+      <line x1="20" y1="14" x2="20" y2="28" />
+      <line x1="26" y1="14" x2="26" y2="28" />
+      <path d="M4 10 L10 10 M7 7 L10 10 L7 13" />
+      <path d="M36 32 L30 32 M33 35 L30 32 L33 29" />
+    </svg>
+  );
+}
+
 export const divisionIcons = {
   trading: TradingIcon,
   contracting: ContractingIcon,
+  decor: DecorIcon,
+  'fit-out': FitOutIcon,
+  'import-export': ImportExportIcon,
   transport: TransportIcon,
   cement: CementIcon,
 } as const;

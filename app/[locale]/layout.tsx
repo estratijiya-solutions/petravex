@@ -3,7 +3,7 @@ import { Cormorant_Garamond, Montserrat, Almarai } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, unstable_setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { locales, type Locale } from '@/i18n';
+import { locales, isRtl, type Locale } from '@/i18n';
 import { CustomCursor } from '@/components/ui/CustomCursor';
 import { GrainOverlay } from '@/components/ui/GrainOverlay';
 import { ScrollProgressBar } from '@/components/ui/ScrollProgressBar';
@@ -38,20 +38,48 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://petravex.com'),
-  title: {
-    default: 'بترافكس — مجموعة متكاملة لمواد البناء',
-    template: '%s — بترافكس',
+// Per-locale metadata. The page reaches both English- and Arabic-
+// speaking audiences; we serve each with their own canonical title +
+// description and the correct OG locale tag.
+const META: Record<Locale, Metadata> = {
+  en: {
+    metadataBase: new URL('https://petravex.com'),
+    title: {
+      default: 'Petravex — An integrated building-materials group',
+      template: '%s — Petravex',
+    },
+    description:
+      'Petravex: from stone, we build the future. Multiple companies, one purpose across the UAE.',
+    openGraph: {
+      title: 'Petravex — An integrated building-materials group',
+      description: 'From stone, we build the future. Multiple companies, one purpose.',
+      locale: 'en_AE',
+      type: 'website',
+    },
   },
-  description: 'بترافكس: من الحجر، نبني المستقبل. شركات متعددة بهدف واحد عبر الإمارات.',
-  openGraph: {
-    title: 'بترافكس — مجموعة متكاملة لمواد البناء',
-    description: 'من الحجر، نبني المستقبل. شركات متعددة بهدف واحد.',
-    locale: 'ar_AE',
-    type: 'website',
+  ar: {
+    metadataBase: new URL('https://petravex.com'),
+    title: {
+      default: 'بترافكس — مجموعة متكاملة لمواد البناء',
+      template: '%s — بترافكس',
+    },
+    description: 'بترافكس: من الحجر، نبني المستقبل. شركات متعددة بهدف واحد عبر الإمارات.',
+    openGraph: {
+      title: 'بترافكس — مجموعة متكاملة لمواد البناء',
+      description: 'من الحجر، نبني المستقبل. شركات متعددة بهدف واحد.',
+      locale: 'ar_AE',
+      type: 'website',
+    },
   },
 };
+
+export function generateMetadata({
+  params: { locale },
+}: {
+  params: { locale: string };
+}): Metadata {
+  return META[locale as Locale] ?? META.en;
+}
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -68,13 +96,20 @@ export default async function RootLayout({
   unstable_setRequestLocale(locale);
   const messages = await getMessages();
 
+  const rtl = isRtl(locale);
+  // Per-locale body font: English uses Montserrat (font-body), Arabic
+  // uses Almarai (font-arabic). Tailwind `rtl:` variants on individual
+  // components override this when the design calls for a serif (e.g.,
+  // the hero wordmark uses Cormorant Garamond in English).
+  const bodyFont = rtl ? 'font-arabic' : 'font-body';
+
   return (
     <html
       lang={locale}
-      dir="rtl"
+      dir={rtl ? 'rtl' : 'ltr'}
       className={`${cormorant.variable} ${montserrat.variable} ${almarai.variable}`}
     >
-      <body className="bg-black text-white/85 font-arabic antialiased">
+      <body className={`bg-black text-white/85 ${bodyFont} antialiased`}>
         <GrainOverlay />
         <ScrollProgressBar />
         <CustomCursor />

@@ -51,7 +51,7 @@ export default function JourneyScene({ scrollRef, mouseRef }: Props) {
         style={{ opacity: mounted ? 1 : 0 }}
       >
         <Canvas
-          camera={{ position: [0, 0, 9], fov: 38, near: 0.1, far: 60 }}
+          camera={{ position: [0, 0, 15], fov: 38, near: 0.1, far: 60 }}
           gl={{
             antialias: true,
             alpha: false,

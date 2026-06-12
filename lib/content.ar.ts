@@ -29,9 +29,13 @@ export const content = {
     sectionTitle: 'شركات متعددة. سلسلة واحدة.',
     sectionSubtitle: 'نعمل من الحجر إلى ناطحات السحاب',
     cta: 'اكتشف المجموعة',
+    detailsCta: 'التفاصيل',
     items: [
       { name: 'التجارة', location: 'دبي', href: '/group/trading', key: 'trading' },
-      { name: 'المقاولات والديكور', location: 'دبي', href: '/group/contracting', key: 'contracting' },
+      { name: 'المقاولات', location: 'دبي', href: '/group/contracting', key: 'contracting' },
+      { name: 'الديكور', location: 'دبي', href: '/group/decor', key: 'decor' },
+      { name: 'التشطيب الداخلي', location: 'دبي', href: '/group/fit-out', key: 'fit-out' },
+      { name: 'الاستيراد والتصدير', location: 'دبي', href: '/group/import-export', key: 'import-export' },
       { name: 'النقل', location: 'الإمارات', href: '/group/transport', key: 'transport' },
       { name: 'طحن الكلنكر', location: 'راكز', href: '/group/cement', key: 'cement' },
     ],
@@ -133,6 +137,9 @@ export const content = {
       items: [
         { name: 'التجارة', href: '/group/trading' },
         { name: 'المقاولات', href: '/group/contracting' },
+        { name: 'الديكور', href: '/group/decor' },
+        { name: 'التشطيب الداخلي', href: '/group/fit-out' },
+        { name: 'الاستيراد والتصدير', href: '/group/import-export' },
         { name: 'النقل', href: '/group/transport' },
         { name: 'طحن الكلنكر', href: '/group/cement' },
       ],
@@ -165,6 +172,26 @@ export const content = {
     careers: 'الوظائف',
     contact: 'تواصل',
   },
-} as const;
+  placeholders: {
+    comingSoon: 'قيد التحضير',
+    news: { eyebrow: 'الأخبار', title: 'آخر المستجدات من المجموعة', description: 'أحدث الأخبار والإعلانات من شركات بترافكس. صفحة الأخبار التفاعلية قيد التحضير.' },
+    products: { eyebrow: 'المنتجات', title: 'كتالوج بترافكس', description: 'إسمنت ومواد بناء وديكور وفق المواصفات الخليجية. الكتالوج التفاعلي قيد التحضير.' },
+    suppliers: { eyebrow: 'الموردون', title: 'انضم إلى موردينا', description: 'نتعاون مع موردين موثوقين للمواد والمعدات والخدمات. نموذج التقديم التفاعلي قيد التحضير.' },
+    careers: { eyebrow: 'الوظائف', title: 'انضم إلى الفريق', description: 'فرص العمل المتاحة عبر شركات المجموعة. صفحة الوظائف التفاعلية قيد التحضير.' },
+    contact: { eyebrow: 'تواصل', title: 'نسمعك', description: 'للمشتريات والشراكات والاستفسارات العامة. نموذج التواصل التفاعلي قيد التحضير.' },
+    story: { eyebrow: 'قصتنا', title: 'من الحجر إلى ناطحات السحاب', description: 'سلسلة قيمة متكاملة من المنبع إلى الموقع. الصفحة التفصيلية قيد التحضير.' },
+    projects: { eyebrow: 'المشاريع', title: 'مشاريع المجموعة', description: 'لمحات من أعمال شركات بترافكس عبر الإمارات. الصفحة التفاعلية قيد التحضير.' },
+    sustainability: { eyebrow: 'الاستدامة', title: 'مسؤوليتنا تجاه البيئة', description: 'التزامنا بممارسات صديقة للبيئة في كل حلقة من سلسلة القيمة. الصفحة التفصيلية قيد التحضير.' },
+    privacy: { eyebrow: 'الخصوصية', title: 'سياسة الخصوصية', description: 'سياسة الخصوصية وحماية البيانات قيد التحضير.' },
+  },
+  contactPage: {
+    email: 'البريد',
+    phone: 'الهاتف',
+    website: 'الموقع',
+  },
+};
 
+// `Content` is intentionally derived from the WIDENED type of the
+// Arabic tree (no `as const`) so additional locale trees can use their
+// own string values for the same shape.
 export type Content = typeof content;

@@ -15,36 +15,44 @@ type Props = {
 export function SectionHeader({ eyebrow, title, subtitle, align = 'center', className }: Props) {
   const reduce = useReducedMotion();
   const alignClass = align === 'center' ? 'text-center items-center' : 'text-start items-start';
+  // Build a transition that zeros out duration/delay when reduce is true.
+  // Keeps `initial` deterministic on both server and client to avoid
+  // hydration mismatches.
+  const t = (duration: number, delay: number) => ({
+    duration: reduce ? 0 : duration,
+    ease: [0.4, 0, 0.2, 1] as const,
+    delay: reduce ? 0 : delay,
+  });
   return (
     <div className={cn('flex flex-col gap-4', alignClass, className)}>
       <GoldDivider width="short" />
       {eyebrow && (
         <motion.span
-          initial={reduce ? { opacity: 1 } : { opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 8 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1], delay: 0.2 }}
-          className="font-arabic text-xs tracking-caption text-gold uppercase"
+          transition={t(0.6, 0.2)}
+          className="text-xs tracking-caption text-gold uppercase"
         >
           {eyebrow}
         </motion.span>
       )}
       <motion.h2
-        initial={reduce ? { opacity: 1 } : { opacity: 0, y: 16 }}
+        initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
-        transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1], delay: 0.3 }}
-        className="font-arabic text-h2-mobile md:text-h2-desktop text-white arabic-balance"
+        transition={t(0.7, 0.3)}
+        className="text-h2-mobile md:text-h2-desktop text-white arabic-balance"
       >
         {title}
       </motion.h2>
       {subtitle && (
         <motion.p
-          initial={reduce ? { opacity: 1 } : { opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1], delay: 0.45 }}
-          className="font-arabic text-base md:text-lg text-gray-light max-w-2xl arabic-balance"
+          transition={t(0.7, 0.45)}
+          className="text-base md:text-lg text-gray-light max-w-2xl arabic-balance"
         >
           {subtitle}
         </motion.p>

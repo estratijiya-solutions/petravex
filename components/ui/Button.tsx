@@ -21,7 +21,7 @@ type LinkButtonProps = CommonProps &
   Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & { href: string };
 
 const base =
-  'inline-flex items-center gap-2 px-6 py-3 text-sm font-arabic font-medium tracking-wide ' +
+  'inline-flex items-center gap-2 px-6 py-3 text-sm font-medium tracking-wide ' +
   'transition-all duration-300 ease-signature group ' +
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-black';
 

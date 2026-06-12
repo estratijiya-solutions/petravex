@@ -1,13 +1,8 @@
 import { PlaceholderPage } from '@/components/ui/PlaceholderPage';
-
-export const metadata = { title: 'الاستدامة' };
+import { useContent } from '@/lib/content';
 
 export default function SustainabilityPage() {
-  return (
-    <PlaceholderPage
-      eyebrow="الاستدامة"
-      title="بناء مسؤول"
-      description="التزامنا بالاستدامة يمتد من المحاجر إلى المصنع إلى الموقع الإنشائي. تقريرنا التفصيلي قيد التحضير."
-    />
-  );
+  const content = useContent();
+  const p = content.placeholders.sustainability;
+  return <PlaceholderPage eyebrow={p.eyebrow} title={p.title} description={p.description} />;
 }

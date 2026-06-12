@@ -1,13 +1,8 @@
 import { PlaceholderPage } from '@/components/ui/PlaceholderPage';
-
-export const metadata = { title: 'الموردون' };
+import { useContent } from '@/lib/content';
 
 export default function SuppliersPage() {
-  return (
-    <PlaceholderPage
-      eyebrow="الموردون"
-      title="انضم إلى شبكة الموردين"
-      description="نبحث عن شركاء موثوقين لتوريد المواد الخام والمعدات والخدمات. نموذج الانضمام سيكون متاحاً قريباً."
-    />
-  );
+  const content = useContent();
+  const p = content.placeholders.suppliers;
+  return <PlaceholderPage eyebrow={p.eyebrow} title={p.title} description={p.description} />;
 }

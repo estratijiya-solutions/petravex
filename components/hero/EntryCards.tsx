@@ -4,14 +4,8 @@ import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { content } from '@/lib/content.ar';
+import { useContent } from '@/lib/content';
 import { BuyerIcon, SupplierIcon, CareerIcon } from '@/components/ui/EntryIcons';
-
-const entries = [
-  { ...content.entryCards.buyer, Icon: BuyerIcon, key: 'buyer' as const },
-  { ...content.entryCards.supplier, Icon: SupplierIcon, key: 'supplier' as const },
-  { ...content.entryCards.career, Icon: CareerIcon, key: 'career' as const },
-];
 
 function MagneticCard({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -42,17 +36,23 @@ function MagneticCard({ children }: { children: React.ReactNode }) {
 
 export function EntryCards() {
   const reduce = useReducedMotion();
+  const content = useContent();
+  const entries = [
+    { key: 'buyer' as const, Icon: BuyerIcon, ...content.entryCards.buyer },
+    { key: 'supplier' as const, Icon: SupplierIcon, ...content.entryCards.supplier },
+    { key: 'career' as const, Icon: CareerIcon, ...content.entryCards.career },
+  ];
   return (
     <div className="relative z-10 mx-auto mt-14 md:mt-20 grid w-full max-w-6xl grid-cols-1 gap-4 px-6 md:grid-cols-3 md:gap-6 md:px-10">
       {entries.map((entry, i) => (
         <motion.div
           key={entry.key}
-          initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            duration: 0.7,
+            duration: reduce ? 0 : 0.7,
             ease: [0.4, 0, 0.2, 1],
-            delay: 1.0 + i * 0.15,
+            delay: reduce ? 0 : 1.0 + i * 0.15,
           }}
         >
           <MagneticCard>
@@ -106,17 +106,17 @@ export function EntryCards() {
 
                 {/* Text zone */}
                 <div className="flex flex-1 flex-col gap-3">
-                  <h3 className="font-arabic text-2xl md:text-[26px] font-bold text-white leading-tight">
+                  <h3 className="text-2xl md:text-[26px] font-bold text-white leading-tight">
                     {entry.title}
                   </h3>
-                  <p className="font-arabic text-sm md:text-base text-gray-light leading-relaxed">
+                  <p className="text-sm md:text-base text-gray-light leading-relaxed">
                     {entry.description}
                   </p>
                 </div>
 
                 {/* CTA — bottom plate with divider */}
                 <div className="mt-7 flex items-center justify-between border-t border-gray-soft pt-5 transition-colors duration-500 ease-signature group-hover:border-gold/50">
-                  <span className="font-arabic text-sm font-medium text-gold">
+                  <span className="text-sm font-medium text-gold">
                     {entry.cta}
                   </span>
                   <ArrowLeft

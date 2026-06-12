@@ -2,13 +2,18 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { animate, motion, useInView, useReducedMotion } from 'framer-motion';
-import { content } from '@/lib/content.ar';
+import { useLocale } from 'next-intl';
+import { useContent } from '@/lib/content';
 import { toArabicNumerals } from '@/lib/utils';
 import { PatternBg } from '@/components/ui/PatternBg';
+import { isRtl } from '@/i18n';
 
 export function StatsBar() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: '-100px' });
+  const content = useContent();
+  const locale = useLocale();
+  const rtl = isRtl(locale);
 
   return (
     <section id="stats" className="relative bg-black py-24 md:py-32 overflow-hidden">
@@ -25,6 +30,7 @@ export function StatsBar() {
               animate={inView}
               delay={i * 0.1}
               isLast={i === content.stats.items.length - 1}
+              useArabicNumerals={rtl}
             />
           ))}
         </div>
@@ -40,9 +46,10 @@ type StatItemProps = {
   animate: boolean;
   delay: number;
   isLast: boolean;
+  useArabicNumerals: boolean;
 };
 
-function StatItem({ target, suffix, label, animate: shouldAnimate, delay, isLast }: StatItemProps) {
+function StatItem({ target, suffix, label, animate: shouldAnimate, delay, isLast, useArabicNumerals }: StatItemProps) {
   const reduce = useReducedMotion();
   const [value, setValue] = useState(reduce || !shouldAnimate ? target : 0);
 
@@ -63,9 +70,9 @@ function StatItem({ target, suffix, label, animate: shouldAnimate, delay, isLast
 
   return (
     <motion.div
-      initial={reduce ? { opacity: 1 } : { opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={shouldAnimate ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1], delay }}
+      transition={{ duration: reduce ? 0 : 0.6, ease: [0.4, 0, 0.2, 1], delay: reduce ? 0 : delay }}
       className={
         // Equal-height number row + equal-height label row across all cells.
         // No padding hacks — real layout via fixed heights inside the cell.
@@ -78,12 +85,12 @@ function StatItem({ target, suffix, label, animate: shouldAnimate, delay, isLast
           className="font-display font-light text-gold leading-none"
           style={{ fontSize: 'clamp(52px, 8vw, 80px)' }}
         >
-          {toArabicNumerals(value)}
+          {useArabicNumerals ? toArabicNumerals(value) : value.toLocaleString('en-US')}
           {suffix && <span>{suffix}</span>}
         </span>
       </div>
       <div className="mt-3 flex min-h-[44px] md:min-h-[48px] max-w-[160px] items-start justify-center">
-        <span className="font-arabic text-xs md:text-sm text-gray-light tracking-caption uppercase leading-relaxed">
+        <span className="text-xs md:text-sm text-gray-light tracking-caption uppercase leading-relaxed">
           {label}
         </span>
       </div>

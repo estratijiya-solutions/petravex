@@ -21,14 +21,14 @@ services:
       - "traefik.docker.network=traefik"
 
       # HTTPS router
-      - "traefik.http.routers.petravex.rule=Host(`visualizuae.com`) || Host(`www.visualizuae.com`)"
+      - "traefik.http.routers.petravex.rule=Host(`estratijiyatest.com`) || Host(`www.estratijiyatest.com`)"
       - "traefik.http.routers.petravex.entrypoints=websecure"
       - "traefik.http.routers.petravex.tls=true"
       - "traefik.http.routers.petravex.tls.certresolver=letsencrypt"
       - "traefik.http.services.petravex.loadbalancer.server.port=3000"
 
       # HTTP -> HTTPS redirect
-      - "traefik.http.routers.petravex-http.rule=Host(`visualizuae.com`) || Host(`www.visualizuae.com`)"
+      - "traefik.http.routers.petravex-http.rule=Host(`estratijiyatest.com`) || Host(`www.estratijiyatest.com`)"
       - "traefik.http.routers.petravex-http.entrypoints=web"
       - "traefik.http.routers.petravex-http.middlewares=redirect-to-https@docker"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"

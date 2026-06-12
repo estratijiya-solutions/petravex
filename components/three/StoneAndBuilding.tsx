@@ -41,9 +41,11 @@ export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
   const dustRef = useRef<THREE.Points>(null);
   const groundRef = useRef<THREE.Mesh>(null);
 
-  // ── Stone — irregular icosahedron, vertex-displaced for organic facets
+  // ── Stone — octahedron (8 faces, 12 edges). Reads as a raw uncut gem,
+  // matches the geometric simplicity of the bag (box) and building (box)
+  // so the cycle feels coherent. Vertices are nudged for organic asymmetry.
   const stoneGeom = useMemo(() => {
-    const base = new THREE.IcosahedronGeometry(3.0, 1);
+    const base = new THREE.OctahedronGeometry(3.0, 0);
     const pos = base.attributes.position;
     const v = new THREE.Vector3();
     for (let i = 0; i < pos.count; i++) {
@@ -144,9 +146,9 @@ export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
       : 0;
 
     if (groupRef.current) {
-      // One full rotation per cycle — synchronizes the form change with
-      // the spin so the morph reads as a deliberate transformation.
-      groupRef.current.rotation.y = (t / CYCLE) * Math.PI * 2;
+      // Slow rotation — one full revolution every 2 cycles (60s). Faster
+      // spinning made the wireframe edges sweep wide arcs and feel chaotic.
+      groupRef.current.rotation.y = (t / (CYCLE * 2)) * Math.PI * 2;
       // Mouse parallax only — no time-based wobble.
       groupRef.current.rotation.x = THREE.MathUtils.lerp(
         groupRef.current.rotation.x,
@@ -165,8 +167,10 @@ export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
       );
     }
 
-    // Camera — slight dolly with scroll, soft mouse parallax
-    camera.position.z = THREE.MathUtils.lerp(camera.position.z, 9 + scroll * 3, 0.04);
+    // Camera — slight dolly with scroll, soft mouse parallax. Z=15 keeps
+    // the tallest form (building, 6.6) at ~64% of viewport height with
+    // FOV=38° — readable without filling the screen.
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, 15 + scroll * 3, 0.04);
     camera.position.x = THREE.MathUtils.lerp(camera.position.x, mouse.x * 0.4, 0.04);
     camera.position.y = THREE.MathUtils.lerp(
       camera.position.y,
@@ -215,13 +219,12 @@ export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
         />
       </mesh>
 
-      <group ref={groupRef}>
-        {/* ── STONE ── */}
+      <group ref={groupRef} scale={0.72}>
+        {/* ── STONE — single primary outline + one subtle inner halo for
+            depth. The previous double-halo (1.14 + 1.06 + 1.0) added too
+            much line clutter when overlaid on the dense subdivided geom. */}
         <group ref={stoneGroupRef}>
-          <lineSegments geometry={stoneGeom} scale={1.14}>
-            <lineBasicMaterial color={GOLD} transparent opacity={0.13} blending={THREE.AdditiveBlending} depthWrite={false} />
-          </lineSegments>
-          <lineSegments geometry={stoneGeom} scale={1.06}>
+          <lineSegments geometry={stoneGeom} scale={1.05}>
             <lineBasicMaterial color={GOLD} transparent opacity={0.28} blending={THREE.AdditiveBlending} depthWrite={false} />
           </lineSegments>
           <lineSegments ref={stoneRef} geometry={stoneGeom}>
@@ -295,12 +298,19 @@ export function StoneAndBuilding({ scrollRef, mouseRef }: Props) {
 /**
  * Cosine window centered at `target` (phase ∈ [0,1]) with given half-width.
  * Returns 1 at the target, smoothly fades to 0 by ±width, with wrap-around.
+ *
+ * Width = 0.25 with plain cos gives a perfect partition-of-unity across
+ * the 3 form targets (0, 1/3, 2/3): at any phase, the sum of all three
+ * windows ≈ 1 (with minor sin/cos imprecision). At midpoints, exactly two
+ * forms are at ~50% each — a clean cross-fade, no "dead" gap, no chaotic
+ * triple-overlap.
  */
-function windowAt(phase: number, target: number, width = 0.40) {
+function windowAt(phase: number, target: number, width = 0.30) {
   let d = phase - target;
   d = d - Math.round(d); // wrap into [-0.5, 0.5]
   const x = Math.abs(d) / width;
-  return x >= 1 ? 0 : Math.cos((x * Math.PI) / 2);
+  if (x >= 1) return 0;
+  return Math.cos((x * Math.PI) / 2);
 }
 
 /**

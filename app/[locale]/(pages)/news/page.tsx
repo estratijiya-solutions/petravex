@@ -1,13 +1,8 @@
 import { PlaceholderPage } from '@/components/ui/PlaceholderPage';
-
-export const metadata = { title: 'الأخبار' };
+import { useContent } from '@/lib/content';
 
 export default function NewsPage() {
-  return (
-    <PlaceholderPage
-      eyebrow="الأخبار"
-      title="آخر المستجدات من المجموعة"
-      description="أحدث الأخبار والإعلانات من شركات بترافكس الست. صفحة الأخبار التفاعلية قيد التحضير."
-    />
-  );
+  const content = useContent();
+  const p = content.placeholders.news;
+  return <PlaceholderPage eyebrow={p.eyebrow} title={p.title} description={p.description} />;
 }

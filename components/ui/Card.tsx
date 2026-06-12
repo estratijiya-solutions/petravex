@@ -24,10 +24,10 @@ export function Card({ href, className, children, delay = 0, interactive = true 
 
   const content = (
     <motion.div
-      initial={reduce ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1], delay }}
+      transition={{ duration: reduce ? 0 : 0.6, ease: [0.4, 0, 0.2, 1], delay: reduce ? 0 : delay }}
       className={innerClass}
     >
       {children}
