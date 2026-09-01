@@ -1,8 +1,30 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { getContent } from '@/lib/content';
+import { pageMetadata } from '@/lib/seo';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { divisionIcons } from '@/components/ui/DivisionIcons';
+
+/**
+ * `<head>` only. Title and description reuse the section heading that
+ * already renders at the top of this page, so nothing new is invented and
+ * nothing visual changes.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const d = getContent(locale).divisions;
+  return pageMetadata({
+    locale,
+    path: 'group',
+    title: d.sectionTitle,
+    description: `${d.sectionSubtitle} — ${d.sectionTitle}`,
+  });
+}
 
 export default async function GroupPage({
   params,

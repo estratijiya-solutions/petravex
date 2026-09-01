@@ -4,6 +4,16 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales, isRtl, type Locale } from '@/i18n';
+import {
+  SITE_URL,
+  SITE_NAME,
+  OG_IMAGE,
+  OG_IMAGE_WIDTH,
+  OG_IMAGE_HEIGHT,
+  GOOGLE_SITE_VERIFICATION,
+  localeUrl,
+} from '@/lib/seo';
+import { GA4 } from '@/components/analytics/GA4';
 import { CustomCursor } from '@/components/ui/CustomCursor';
 import { GrainOverlay } from '@/components/ui/GrainOverlay';
 import { ScrollProgressBar } from '@/components/ui/ScrollProgressBar';
@@ -41,9 +51,24 @@ export const viewport: Viewport = {
 // Per-locale metadata. The page reaches both English- and Arabic-
 // speaking audiences; we serve each with their own canonical title +
 // description and the correct OG locale tag.
+//
+// This is the DEFAULT layer only: every route supplies its own title,
+// description, canonical and hreflang through `pageMetadata()` in
+// `lib/seo.ts`. What stays here is what is genuinely site-wide — the
+// metadataBase, the title template, the share image and the Search
+// Console verification tag.
+const SHARED: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  // Emitted only once Taif pastes the real token into `lib/seo.ts`.
+  // While the constant is empty, no verification tag is rendered at all.
+  ...(GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: GOOGLE_SITE_VERIFICATION } }
+    : {}),
+};
+
 const META: Record<Locale, Metadata> = {
   en: {
-    metadataBase: new URL('https://petravex.com'),
+    ...SHARED,
     title: {
       default: 'Petravex — An integrated building-materials group',
       template: '%s — Petravex',
@@ -53,12 +78,21 @@ const META: Record<Locale, Metadata> = {
     openGraph: {
       title: 'Petravex — An integrated building-materials group',
       description: 'From stone, we build the future. Multiple companies, one purpose.',
+      siteName: SITE_NAME,
+      url: localeUrl('en', ''),
       locale: 'en_AE',
       type: 'website',
+      images: [{ url: OG_IMAGE, width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT, alt: SITE_NAME }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Petravex — An integrated building-materials group',
+      description: 'From stone, we build the future. Multiple companies, one purpose.',
+      images: [OG_IMAGE],
     },
   },
   ar: {
-    metadataBase: new URL('https://petravex.com'),
+    ...SHARED,
     title: {
       default: 'بترافكس — مجموعة متكاملة لمواد البناء',
       template: '%s — بترافكس',
@@ -67,8 +101,17 @@ const META: Record<Locale, Metadata> = {
     openGraph: {
       title: 'بترافكس — مجموعة متكاملة لمواد البناء',
       description: 'من الحجر، نبني المستقبل. شركات متعددة بهدف واحد.',
+      siteName: SITE_NAME,
+      url: localeUrl('ar', ''),
       locale: 'ar_AE',
       type: 'website',
+      images: [{ url: OG_IMAGE, width: OG_IMAGE_WIDTH, height: OG_IMAGE_HEIGHT, alt: SITE_NAME }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'بترافكس — مجموعة متكاملة لمواد البناء',
+      description: 'من الحجر، نبني المستقبل. شركات متعددة بهدف واحد.',
+      images: [OG_IMAGE],
     },
   },
 };
@@ -117,6 +160,9 @@ export default async function RootLayout({
         <CustomCursor />
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
         <BackToTop />
+        {/* Renders nothing at all until a real GA4 Measurement ID is set
+            in `lib/seo.ts`. No markup, no layout box, no request. */}
+        <GA4 />
       </body>
     </html>
   );

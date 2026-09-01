@@ -7,10 +7,11 @@ out/
 build/
 dist/
 
-# env
+# env — everything, no exceptions except the committed example
 .env
-.env.local
+.env.*
 .env*.local
+!.env.example
 
 # deployment platforms
 .vercel
@@ -33,13 +34,26 @@ yarn-error.log*
 next-env.d.ts
 *.tsbuildinfo
 
-# secrets / deployment artifacts
+# secrets / deployment artifacts — NEVER commit any of these.
+# 2026-09-01 audit: deploy.local.env held a plaintext VPS password on disk.
+# It was moved out of the repo; the pattern below is deliberately broad.
 .deploy/
+*.local.env
 deploy.local.env
 *.pem
 *.key
+*.ppk
 id_rsa*
+id_ed25519*
 known_hosts
+credentials*
+secrets*
+
+# local databases / scratch runtime state
+*.db
+*.db-shm
+*.db-wal
+.dev-*.log
 
 # claude
 .claude/
@@ -51,3 +65,6 @@ AUDIT-*.md
 *-AUDIT.md
 .agents/
 skills-lock.json
+
+# ...except this site's OWN audit reports, which belong in the repo.
+!docs/AUDIT-*.md
