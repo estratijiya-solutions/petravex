@@ -37,7 +37,7 @@ ErrorDocument 404 /404.html
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ADDED 2026-09-01 — not yet on the server. Deploy this file to apply.
+# ADDED 2026-09-01 — DEPLOYED to the server 2026-09-01. This file matches production.
 # Everything above is the live production file, pulled from Hostinger verbatim.
 # ─────────────────────────────────────────────────────────────────────────────
 
