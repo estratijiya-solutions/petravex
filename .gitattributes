@@ -6,3 +6,5 @@ Dockerfile     text eol=lf
 
 # Default: let git handle line endings, normalize on commit
 * text=auto
+# .htaccess must keep LF endings — CRLF can break Apache directives.
+.htaccess text eol=lf

@@ -1,0 +1,34 @@
+# Security headers — the same set Traefik supplied on the VPS.
+<IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+</IfModule>
+
+# English lives at the site root (that is how every internal link and every
+# indexed URL is written). The static export emits it under /en/, and the
+# files have been moved up — so anything still asking for /en/... gets a
+# permanent redirect to the canonical bare path.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^en/?$ / [R=301,L]
+    RewriteRule ^en/(.*)$ /$1 [R=301,L]
+</IfModule>
+
+ErrorDocument 404 /404.html
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json image/svg+xml
+</IfModule>
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ADDED 2026-09-01 — not yet on the server. Deploy this file to apply.
+# Everything above is the live production file, pulled from Hostinger verbatim.
+# ─────────────────────────────────────────────────────────────────────────────
+
+<FilesMatch "\.(md)$">
+    Require all denied
+</FilesMatch>
