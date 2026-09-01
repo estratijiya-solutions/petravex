@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { useContent } from '@/lib/content';
+import { getContent } from '@/lib/content';
 import { PlaceholderPage } from '@/components/ui/PlaceholderPage';
 
 const slugMap = {
@@ -16,10 +16,17 @@ export function generateStaticParams() {
   return Object.keys(slugMap).map((division) => ({ division }));
 }
 
-export default function DivisionPage({ params }: { params: { division: string } }) {
-  if (!(params.division in slugMap)) notFound();
-  const content = useContent();
-  const item = content.divisions.items.find((d) => d.key === params.division);
+export default async function DivisionPage({
+  params,
+}: {
+  params: Promise<{ division: string; locale: string }>;
+}) {
+  const { division, locale } = await params;
+  if (!(division in slugMap)) notFound();
+  // `getContent` is the server-safe sibling of `useContent`: this page is an
+  // async component, and next-intl's `useLocale()` cannot be called in one.
+  const content = getContent(locale);
+  const item = content.divisions.items.find((d) => d.key === division);
   if (!item) notFound();
   return (
     <PlaceholderPage

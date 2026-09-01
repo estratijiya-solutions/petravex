@@ -1,15 +1,16 @@
-import { unstable_setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import { Header } from '@/components/nav/Header';
 import { Footer } from '@/components/sections/Footer';
 
-export default function PagesLayout({
+export default async function PagesLayout({
   children,
-  params: { locale },
+  params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  unstable_setRequestLocale(locale);
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <>
       <Header />

@@ -1,4 +1,4 @@
-import { unstable_setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import { Header } from '@/components/nav/Header';
 import { Footer } from '@/components/sections/Footer';
 import { Hero } from '@/components/hero/Hero';
@@ -8,8 +8,9 @@ import { StatsBar } from '@/components/sections/StatsBar';
 import { DualCTA } from '@/components/sections/DualCTA';
 import { NewsHighlight } from '@/components/sections/NewsHighlight';
 
-export default function HomePage({ params: { locale } }: { params: { locale: string } }) {
-  unstable_setRequestLocale(locale);
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <main className="relative">
       <Header />

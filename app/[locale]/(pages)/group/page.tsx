@@ -1,11 +1,19 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { useContent } from '@/lib/content';
+import { getContent } from '@/lib/content';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { divisionIcons } from '@/components/ui/DivisionIcons';
 
-export default function GroupPage() {
-  const content = useContent();
+export default async function GroupPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Server component: `useContent` resolves the locale through next-intl,
+  // which needs a live request. `getContent` is its server-safe sibling and
+  // keeps this page statically exportable.
+  const { locale } = await params;
+  const content = getContent(locale);
   return (
     <section className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-24">
       <SectionHeader

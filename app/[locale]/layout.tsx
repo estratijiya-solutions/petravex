@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Cormorant_Garamond, Montserrat, Almarai } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, unstable_setRequestLocale } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales, isRtl, type Locale } from '@/i18n';
 import { CustomCursor } from '@/components/ui/CustomCursor';
@@ -73,11 +73,12 @@ const META: Record<Locale, Metadata> = {
   },
 };
 
-export function generateMetadata({
-  params: { locale },
+export async function generateMetadata({
+  params,
 }: {
-  params: { locale: string };
-}): Metadata {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
   return META[locale as Locale] ?? META.en;
 }
 
@@ -87,13 +88,14 @@ export function generateStaticParams() {
 
 export default async function RootLayout({
   children,
-  params: { locale },
+  params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
   if (!locales.includes(locale as Locale)) notFound();
-  unstable_setRequestLocale(locale);
+  setRequestLocale(locale);
   const messages = await getMessages();
 
   const rtl = isRtl(locale);
