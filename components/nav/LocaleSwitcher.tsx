@@ -69,16 +69,30 @@ export function LocaleSwitcher() {
 /**
  * Swap the locale segment of a path. Treats the default locale as the
  * "no-prefix" case (e.g. English at `/`, not `/en`).
+ *
+ * Strips whichever locale prefix is ACTUALLY on the path rather than the one
+ * `from` implies. That distinction is the whole bug this function used to
+ * have: under `output: 'export'` the English pages are prerendered at the
+ * route `/en/...`, so at build time `usePathname()` returns `/en/`, not `/`.
+ * The old version only stripped a prefix when `from !== defaultLocale`, so on
+ * every English page it left the `/en` in place and emitted `/ar/en/...` —
+ * a 404 baked into the HTML, which hydration never corrected because React
+ * had no reason to re-render the link.
  */
-function swapLocale(pathname: string, from: Locale, to: Locale): string {
-  // Strip current locale prefix if any (only non-default locales carry a prefix)
+function swapLocale(pathname: string, _from: Locale, to: Locale): string {
   let rest = pathname;
-  if (from !== defaultLocale) {
-    const prefix = `/${from}`;
-    if (rest === prefix) rest = '/';
-    else if (rest.startsWith(`${prefix}/`)) rest = rest.slice(prefix.length);
+
+  for (const loc of locales) {
+    if (rest === `/${loc}` || rest === `/${loc}/`) {
+      rest = '/';
+      break;
+    }
+    if (rest.startsWith(`/${loc}/`)) {
+      rest = rest.slice(loc.length + 1);
+      break;
+    }
   }
-  // Add new locale prefix unless it's the default
-  if (to === defaultLocale) return rest;
+
+  if (to === defaultLocale) return rest === '' ? '/' : rest;
   return rest === '/' ? `/${to}` : `/${to}${rest}`;
 }
