@@ -5,6 +5,18 @@
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+
+    # Content-Security-Policy — deliberately narrow.
+    #   upgrade-insecure-requests : keeps what the hcdn edge already sends.
+    #   frame-ancestors 'self'    : the modern X-Frame-Options; same restriction,
+    #                               but one browsers still honour.
+    #   object-src 'none'         : kills <object>/<embed> injection.
+    #   base-uri 'self'           : stops an injected <base> rewriting every
+    #                               relative URL on the page.
+    # No default-src/script-src/form-action on purpose — those need a full
+    # inventory of every inline script and form endpoint per site, and getting
+    # one wrong breaks the page silently. These four are safe on a static site.
+    Header always set Content-Security-Policy "upgrade-insecure-requests; frame-ancestors 'self'; object-src 'none'; base-uri 'self'"
 </IfModule>
 
 # English lives at the site root (that is how every internal link and every
